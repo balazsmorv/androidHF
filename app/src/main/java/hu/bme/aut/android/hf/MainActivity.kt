@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import hu.bme.aut.android.hf.api.MovieSearchProvider
 import hu.bme.aut.android.hf.data.MovieDetailsDatabase
 import hu.bme.aut.android.hf.data.SearchResult
+import hu.bme.aut.android.hf.recyclerViewThings.SearchResultAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlin.concurrent.thread
 
@@ -41,10 +42,18 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.SearchResultClickL
             } else {
                 movieSearchProvider.getMoveDetails(searchField.text.toString())
                     .subscribe({
-                        Log.d("Movie", "new data: $it")
+                        if (it != null) {
+                            Log.d("Movie", "new data: $it")
+                            val intent = Intent(this, DetailsView::class.java)
+                            val bundle = Bundle()
+                            bundle.putString("imdbID", it.imdbID)
+                            intent.putExtras(bundle)
+                            startActivity(intent)
+                        }
                     }, {
                         Log.d("Movie error", it.localizedMessage)
                     })
+
             }
         }
 
@@ -106,7 +115,6 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.SearchResultClickL
     private fun initRecyclerView() {
         recyclerView = SearchRecyclerView
         adapter = SearchResultAdapter(this)
-        //loadItemsInBackground() // TODO: implement this below
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
     }

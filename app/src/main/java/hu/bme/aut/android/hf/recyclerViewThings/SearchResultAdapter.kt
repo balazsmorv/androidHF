@@ -1,10 +1,11 @@
-package hu.bme.aut.android.hf
+package hu.bme.aut.android.hf.recyclerViewThings
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import hu.bme.aut.android.hf.R
 import hu.bme.aut.android.hf.data.SearchResult
 
 class SearchResultAdapter(private val listener: SearchResultClickListener) :
@@ -25,14 +26,14 @@ class SearchResultAdapter(private val listener: SearchResultClickListener) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): SearchResultAdapter.SearchResultViewHolder {
+    ): SearchResultViewHolder {
         val itemView: View = LayoutInflater.from(parent.context)
             .inflate(R.layout.result_row, parent, false)
         return SearchResultViewHolder(itemView)
     }
 
     override fun onBindViewHolder(
-        holder: SearchResultAdapter.SearchResultViewHolder,
+        holder: SearchResultViewHolder,
         position: Int
     ) {
         val item = items[position]

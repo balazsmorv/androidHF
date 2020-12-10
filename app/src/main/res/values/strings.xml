@@ -8,4 +8,5 @@
     <string name="toggleButtonOn">ID</string>
     <string name="searchButtonTitle">Search</string>
     <string name="textfieldText">Movie name</string>
+    <string name="historyLabel">History</string>
 </resources>

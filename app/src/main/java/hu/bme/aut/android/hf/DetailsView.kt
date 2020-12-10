@@ -76,19 +76,7 @@ class DetailsView : AppCompatActivity() {
         val apiDisposable = this.movieDetails
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe ({ movieData ->
-                titleTextView.text = movieData!!.title
-                if (movieData.genre != null) {
-                    scrollViewInside.addView(addRow("Genre", movieData.genre))
-                }
-                if (movieData.actors != null) {
-                    scrollViewInside.addView(addRow("Actors", movieData.actors))
-                }
-                if (movieData.imdbRating != null) {
-                    scrollViewInside.addView(addRow("IMDB Score", movieData.imdbRating))
-                }
-                if (movieData.imdbVotes != null) {
-                    scrollViewInside.addView(addRow("Number of votes", movieData.imdbVotes.toString()))
-                }
+                layoutSubviews(movieData)
             }, {
                 Log.d("Error", "Error: ${it.localizedMessage}")
             })
@@ -130,6 +118,22 @@ class DetailsView : AppCompatActivity() {
         titleView.text = title
         valueView.text = value
         return itemView
+    }
+
+    private fun layoutSubviews(movieData: MovieData) {
+        titleTextView.text = movieData.title
+        if (movieData.genre != null) {
+            scrollViewInside.addView(addRow("Genre", movieData.genre))
+        }
+        if (movieData.actors != null) {
+            scrollViewInside.addView(addRow("Actors", movieData.actors))
+        }
+        if (movieData.imdbRating != null) {
+            scrollViewInside.addView(addRow("IMDB Score", movieData.imdbRating))
+        }
+        if (movieData.imdbVotes != null) {
+            scrollViewInside.addView(addRow("Number of votes", movieData.imdbVotes.toString()))
+        }
     }
 
     override fun onStop() {
