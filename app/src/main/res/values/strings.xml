@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HF</string>
+    <string name="button_back">Back</string>
+    <string name="title">Title</string>
+    <string name="poster_picture_description">Poster picture</string>
+    <string name="toggleSwitch">Switch</string>
+    <string name="toggleButtonTitle">Title</string>
+    <string name="toggleButtonOn">ID</string>
+    <string name="searchButtonTitle">Search</string>
+    <string name="textfieldText">Movie name</string>
+</resources>
