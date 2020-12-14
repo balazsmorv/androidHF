@@ -23,6 +23,7 @@ class SearchAPIProvider(val repo: SearchAPIRepository) {
             .flatMap {
                 this.api.getDataForTitle(it)
             }.subscribe( {
+                Log.d("DEBUG", "search for title called: $it")
                 this.repo.searchResult.onNext(it)
             }, {
                 Log.println(Log.INFO, "Search", "Error in SearchAPIProvider: ${it.localizedMessage}")

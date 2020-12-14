@@ -71,10 +71,4 @@ class API {
             .onErrorReturn { null }
             .subscribeOn(Schedulers.io())
     }
-
-
-
-
-
-
 }

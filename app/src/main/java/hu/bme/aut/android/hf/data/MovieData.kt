@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import hu.bme.aut.android.hf.dto.MovieSearchDTO
+import java.io.Serializable
 
 @Entity(tableName = "movieData")
 data class MovieData(val title: String,
@@ -25,14 +26,14 @@ data class MovieData(val title: String,
                      val imdbRating: String?,
                      val imdbVotes: Int?,
                      @PrimaryKey(autoGenerate = false) val imdbID: String,
-                     val type: String?) {
+                     val type: String?) : Serializable {
 
 
 
 
 }
 
-class RatingList(var ratings: List<Ratings>) {
+class RatingList(var ratings: List<Ratings>) : Serializable {
 
     companion object {
         @JvmStatic
@@ -63,7 +64,7 @@ class RatingList(var ratings: List<Ratings>) {
 
 }
 
-class Ratings(val source: String, val score: String) {
+class Ratings(val source: String, val score: String) : Serializable {
 }
 
 class RatingsConverter {

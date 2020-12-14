@@ -38,17 +38,25 @@ class DetailsView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.movie_details)
 
+        database = Room.databaseBuilder(applicationContext, MovieDetailsDatabase::class.java, "movies").build()
+
         val bundle = intent.extras
         if (bundle != null) {
-            Log.d("Details view", "got id in bundle: ${bundle.getString("imdbID")}")
-            this.imdbID.onNext(bundle.getString("imdbID", ""))
+            if (bundle.getString("imdbID") != null) {
+                this.imdbID.onNext(bundle.getString("imdbID", ""))
+            } else if (bundle.getSerializable("details") != null) {
+                val movieData = bundle.getSerializable("details") as MovieData
+                this.layoutSubviews(movieData)
+                if (movieData.poster != null)
+                    this.loadImage(movieData.poster)
+                this.save(movieData)
+            }
         }
 
         backButton.setOnClickListener {
             finish()
         }
 
-        database = Room.databaseBuilder(applicationContext, MovieDetailsDatabase::class.java, "movies").build()
     }
 
     init {
@@ -85,11 +93,7 @@ class DetailsView : AppCompatActivity() {
             .observeOn(Schedulers.io())
             .subscribe({
                 if (it.poster != null) {
-                    val url = URL(it.poster)
-                    val bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream())
-                    runOnUiThread {
-                        this.imageView.setImageBitmap(bmp)
-                    }
+                    loadImage(it.poster)
                 }
             }, {
                 Log.d("Image loading error", "Error occured during image loading: $it")
@@ -100,9 +104,7 @@ class DetailsView : AppCompatActivity() {
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe({
-                Log.d("Data", "data came: $it")
-                database.movieDetailsDao().insert(it)
-                Log.d("All data", "all data in database: ${database.movieDetailsDao().getAll()}")
+                save(it)
             }, {
                 Log.d("Persistence error", "no persistance saving, ${it.localizedMessage}")
             })
@@ -140,6 +142,27 @@ class DetailsView : AppCompatActivity() {
         super.onStop()
         this.disposeBag.dispose()
         this.database.close()
+    }
+
+    private fun loadImage(from: String) {
+        thread {
+            val url = URL(from)
+            val bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+            runOnUiThread {
+                this.imageView.setImageBitmap(bmp)
+            }
+        }
+    }
+
+    private fun save(movieData: MovieData) {
+        thread {
+            try {
+                database.movieDetailsDao().update(movieData)
+            } catch (e: Error) {
+                Log.d("Database error", "${e.localizedMessage}")
+            }
+            Log.d("All data", "all data in database: ${database.movieDetailsDao().getAll()}")
+        }
     }
 
     private fun <T> Flowable<T>.applyScheduler(scheduler: Scheduler) =

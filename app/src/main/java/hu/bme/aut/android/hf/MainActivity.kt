@@ -38,17 +38,21 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.SearchResultClickL
         searchButton.setOnClickListener {
             this.adapter.removeItems()
             if (!toggleButton.isChecked) {
+                Log.d("Search for title", "search for ${searchField.text.toString()}")
                 searchProvider.searchForTitle.onNext(searchField.text.toString())
             } else {
+                Log.d("Search for id", "search for ${searchField.text.toString()}")
                 movieSearchProvider.getMoveDetails(searchField.text.toString())
                     .subscribe({
                         if (it != null) {
-                            Log.d("Movie", "new data: $it")
-                            val intent = Intent(this, DetailsView::class.java)
-                            val bundle = Bundle()
-                            bundle.putString("imdbID", it.imdbID)
-                            intent.putExtras(bundle)
-                            startActivity(intent)
+                            thread {
+                                Log.d("Movie", "new data: $it")
+                                val intent = Intent(this, DetailsView::class.java)
+                                val bundle = Bundle()
+                                bundle.putSerializable("details", it)
+                                intent.putExtras(bundle)
+                                startActivity(intent)
+                            }
                         }
                     }, {
                         Log.d("Movie error", it.localizedMessage)
@@ -87,10 +91,10 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.SearchResultClickL
         database = Room.databaseBuilder(applicationContext, MovieDetailsDatabase::class.java, "movies").build()
     }
 
-    override fun onStop() {
+    override fun onDestroy() {
         this.disposeables.dispose()
         this.searchProvider.dispose()
-        super.onStop()
+        super.onDestroy()
         database.close()
     }
 
