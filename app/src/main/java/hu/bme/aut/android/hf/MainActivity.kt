@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import com.daimajia.androidanimations.library.Techniques
+import com.daimajia.androidanimations.library.YoYo
 import hu.bme.aut.android.hf.api.SearchAPIProvider
 import hu.bme.aut.android.hf.api.SearchAPIRepository
 import io.reactivex.disposables.CompositeDisposable
@@ -36,6 +38,7 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.SearchResultClickL
         setContentView(R.layout.activity_main)
 
         searchButton.setOnClickListener {
+            YoYo.with(Techniques.Bounce).duration(1000).playOn(this.searchButton)
             this.adapter.removeItems()
             if (!toggleButton.isChecked) {
                 Log.d("Search for title", "search for ${searchField.text.toString()}")
