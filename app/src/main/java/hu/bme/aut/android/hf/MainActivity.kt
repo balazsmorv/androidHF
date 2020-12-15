@@ -61,6 +61,14 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.SearchResultClickL
             }
         }
 
+        historyButton.setOnClickListener {
+            thread {
+                Log.d("History view", "going to history view")
+                val intent = Intent(this, HistoryActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
         val beforeFirstSearchDisposable = this.searchProvider.results
             .observeOn(AndroidSchedulers.mainThread())
             .take(1)
@@ -100,7 +108,6 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.SearchResultClickL
 
     override fun onItemChanged(item: SearchResult) {
         thread {
-            // todo: database
             Log.d("MainActivity", "update was successful")
         }
     }

@@ -18,4 +18,7 @@ interface MovieDetailsDao {
     @Delete
     fun deleteItem(movieData: MovieData)
 
+    @Query("SELECT imdbID FROM movieData WHERE imdbID = :id LIMIT 1")
+    fun getItemID(id: String): String?
+
 }

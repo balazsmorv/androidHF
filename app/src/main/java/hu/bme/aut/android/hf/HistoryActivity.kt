@@ -1,7 +1,9 @@
 package hu.bme.aut.android.hf
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
@@ -9,6 +11,7 @@ import hu.bme.aut.android.hf.data.MovieData
 import hu.bme.aut.android.hf.data.MovieDetailsDatabase
 import hu.bme.aut.android.hf.recyclerViewThings.HistoryResultAdapter
 import kotlinx.android.synthetic.main.activity_history.*
+import kotlin.concurrent.thread
 
 class HistoryActivity : AppCompatActivity(), HistoryResultAdapter.HistoryResultClickListener {
 
@@ -23,6 +26,23 @@ class HistoryActivity : AppCompatActivity(), HistoryResultAdapter.HistoryResultC
 
         database = Room.databaseBuilder(applicationContext, MovieDetailsDatabase::class.java, "movies").build()
         initRecyclerView()
+
+        backToMainButton.setOnClickListener {
+            finish()
+        }
+        thread {
+            loadAllData()
+        }
+
+    }
+
+    private fun loadAllData() {
+        val allSearches = database.movieDetailsDao().getAll()
+        this.runOnUiThread {
+            for (element in allSearches) {
+                this.adapter.addItem(element)
+            }
+        }
     }
 
     override fun onStop() {
@@ -31,11 +51,15 @@ class HistoryActivity : AppCompatActivity(), HistoryResultAdapter.HistoryResultC
     }
 
     override fun onItemChanged(item: MovieData) {
-        TODO("Not yet implemented")
     }
 
     override fun onTap(item: MovieData) {
-        TODO("Not yet implemented")
+            Log.d("Movie", "new data: $item")
+            val intent = Intent(this, DetailsView::class.java)
+            val bundle = Bundle()
+            bundle.putSerializable("details", item)
+            intent.putExtras(bundle)
+            startActivity(intent)
     }
 
     private fun initRecyclerView() {

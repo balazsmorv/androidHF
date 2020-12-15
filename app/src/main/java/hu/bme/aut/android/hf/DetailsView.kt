@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.webkit.URLUtil
 import android.widget.TextView
 import androidx.room.Room
 import com.jakewharton.rxrelay3.BehaviorRelay
@@ -146,22 +147,33 @@ class DetailsView : AppCompatActivity() {
 
     private fun loadImage(from: String) {
         thread {
-            val url = URL(from)
-            val bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream())
-            runOnUiThread {
-                this.imageView.setImageBitmap(bmp)
-            }
+            try {
+                if (URLUtil.isValidUrl(from)) {
+                    val url = URL(from)
+                    val bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+                    runOnUiThread {
+                        this.imageView.setImageBitmap(bmp)
+                    }
+                }
+            } catch (e: Error) {
+                    Log.d("Error image", "Error during image loading: $e")
+                }
         }
     }
 
     private fun save(movieData: MovieData) {
         thread {
             try {
-                database.movieDetailsDao().update(movieData)
+                val id = database.movieDetailsDao().getItemID(movieData.imdbID)
+                if (id == null) {
+                    database.movieDetailsDao().insert(movieData)
+                } else {
+                    database.movieDetailsDao().update(movieData)
+                }
             } catch (e: Error) {
                 Log.d("Database error", "${e.localizedMessage}")
             }
-            Log.d("All data", "all data in database: ${database.movieDetailsDao().getAll()}")
+            Log.d("all data", "all data in database: ${database.movieDetailsDao().getAll()}")
         }
     }
 
